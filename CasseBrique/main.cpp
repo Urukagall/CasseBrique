@@ -19,8 +19,8 @@ int main(int argc, char** argv)
 
     
     GameObject truc(0, 0, 100, &oWindow, Color::Red);
-    GameObject canon(oWindow.getSize().x/ 2, 250, 50, 100, &oWindow, Color::Green);
-	GameObject canon2(oWindow.getSize().x / 2 - 110, 100, 50, 100, &oWindow, Color::Blue);
+    GameObject canon(oWindow.getSize().x/ 2, 500, 50, 100, &oWindow, Color::Green);
+	GameObject canon2(oWindow.getSize().x / 2 - 110, 350, 50, 100, &oWindow, Color::Blue);
 
     float fDeltaTime = 0.0f;
 

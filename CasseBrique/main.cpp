@@ -1,39 +1,41 @@
+#include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 #include "GameObject.h"
+#include <vector>
 
 using namespace sf;
+using namespace std;
+
+Clock oClock;
 
 int main(int argc, char** argv)
 {
     //Création d'une fenêtre
-    RenderWindow oWindow(VideoMode(640, 480), "SFML");
 
-    //Création d'un cercle de radius 100
-    CircleShape oCircle(100.f);
-    //A la position 0, 0
-    oCircle.setPosition(0.f, 0.f);
-    //Et de couleur verte
-    oCircle.setFillColor(Color::Green);
+    VideoMode fullscreenMode = VideoMode::getFullscreenModes()[0];
+    RenderWindow oWindow(VideoMode(900, 900), "SFML");
+    //sf::RenderWindow window(fullscreenMode, "SFML Fullscreen", sf::Style::Fullscreen);
 
-
-    //Création d'un rectangle de taille 50, 50
-    RectangleShape oRectangle(Vector2f(50.f, 50.f));
-    //A la position 100, 100
-    oCircle.setPosition(100.f, 100.f);
-    //Et de couleur rouge
-    oRectangle.setFillColor(Color::Red);
     
     GameObject truc(0, 0, 100, &oWindow, Color::Red);
+    GameObject canon(oWindow.getSize().x/ 2, 250, 50, 100, &oWindow, Color::Green);
+	GameObject canon2(oWindow.getSize().x / 2 - 110, 100, 50, 100, &oWindow, Color::Blue);
+
+    float fDeltaTime = 0.0f;
 
     //GameLoop
     while (oWindow.isOpen())
     {
+
         //EVENT
         Event oEvent;
         while (oWindow.pollEvent(oEvent))
         {
             if (oEvent.type == Event::Closed)
                 oWindow.close();
+            if (oEvent.type==Event::KeyPressed && oEvent.key.code == Keyboard::Escape)
+				oWindow.close();
         }
 
         //UPDATE
@@ -41,10 +43,16 @@ int main(int argc, char** argv)
         //DRAW
         oWindow.clear();
 
-        oWindow.draw(oCircle);
-        oWindow.draw(oRectangle);
         truc.Draw();
+		canon.Draw();
+        //canon.Rotate();
+        canon2.Colision(canon);
+        canon2.Move(fDeltaTime, { 1, 1 });
+        canon2.Draw();
         oWindow.display();
+        
+
+        fDeltaTime = oClock.restart().asSeconds();
     }
 
     return 0;

@@ -14,7 +14,7 @@ public:
     float sizeH = 0;
     float sizeW = 0;
     Vector2f direction; 
-    float speed = 10;
+    float speed = 200;
     Color color;
     RenderWindow* oWindow;
     Shape* shape;
@@ -29,9 +29,10 @@ public:
     GameObject(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, Color color);
 
     void Draw();
-    void Move(float fDeltaTime, Vector2f direction);
-    void Rotate(float VPositionX, float VPositionY);
+    void Move(float fDeltaTime);
+    void Rotate(Vector2i vPosition);
     void Colision(GameObject gameObject);
-
+    void Shoot(Vector2i vPosition);
+    void ChangeDirection(Vector2f direction);
 };
 

@@ -29,9 +29,8 @@ void GameObject::Draw() {
 }
 
 
-void GameObject::Move(float fDeltaTime, Vector2f oDirection) 
+void GameObject::Move(float fDeltaTime) 
 {
-	direction = Math::Normalized(oDirection);
 
 	posX += direction.x * fDeltaTime * speed;
 	posY += direction.y * fDeltaTime * speed;
@@ -39,16 +38,17 @@ void GameObject::Move(float fDeltaTime, Vector2f oDirection)
 
 }
 
-void GameObject::Rotate(float VPositionX, float VPositionY) {
-	if (VPositionY < posY)
+void GameObject::ChangeDirection(Vector2f oDirection) {
+	direction = Math::Normalized(oDirection);
+}
+
+void GameObject::Rotate(Vector2i vPosition) {
+	if (vPosition.y < posY) //à changer pour que l'angle soit moins de 180°
 	{
 		shape->setOrigin(sizeH / 2, 0);
-		float mouseAngle = -atan2(VPositionX - posX, VPositionY - posY) * 100 / 3.14159;
+		float mouseAngle = -atan2(vPosition.x - posX, vPosition.y - posY) * 180 / 3.14159;
 		shape->setRotation(mouseAngle); 
 	}
-
-
-//shape->setRotation(shape->getRotation() + 0.1);
 }
 
 void GameObject::Colision(GameObject gameObject) {
@@ -96,5 +96,7 @@ void GameObject::Colision(GameObject gameObject) {
 	}
 }
 
+void GameObject::Shoot(Vector2i vPosition) {
 
+}
 

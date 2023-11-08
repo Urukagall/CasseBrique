@@ -9,8 +9,11 @@ using namespace std;
 
 Clock oClock;
 
+
+
 int main(int argc, char** argv)
 {
+
     //Création d'une fenêtre
 
     VideoMode fullscreenMode = VideoMode::getFullscreenModes()[0];
@@ -18,8 +21,9 @@ int main(int argc, char** argv)
     //sf::RenderWindow window(fullscreenMode, "SFML Fullscreen", sf::Style::Fullscreen);
 
     vector<GameObject> ballList;
-    GameObject truc(0, 0, 100, &oWindow, Color::Red);
-    GameObject canon(oWindow.getSize().x/ 2, 500, 50, 100, &oWindow, Color::Green);
+	vector<GameObject> brickList;
+    brickList.push_back(GameObject(200, 200, 100, 50, &oWindow, Color::Red));
+    GameObject canon(oWindow.getSize().x/ 2, 800, 50, 100, &oWindow, Color::Green);
 	GameObject canon2(oWindow.getSize().x / 2 - 110, 350, 50, 100, &oWindow, Color::Blue);
 
 
@@ -40,22 +44,9 @@ int main(int argc, char** argv)
 				oWindow.close();
             }
             if (oEvent.type == Event::MouseButtonPressed && oEvent.key.code == Mouse::Left) {
-                if (ballList.size() == 0)
+                if (ballList.size() <= 100 and Mouse::getPosition(oWindow).y < canon.posY)
                 {
-                    Vector2i mousePos = Mouse::getPosition(oWindow);
-                    Vector2f mousePosF = Vector2f(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-
-                    Vector2f ballStartPosition = Vector2f(static_cast<float>(canon.posX), static_cast<float>(canon.posY));
-
-                    Vector2f direction = Vector2f(mousePosF.x - ballStartPosition.x, mousePosF.y - ballStartPosition.y);
-
-                    ballList.push_back(GameObject(canon.posX, canon.posY, 10, &oWindow, Color::Blue));
-
-                    ballList[ballList.size() - 1].shape->setOrigin(ballList[ballList.size() - 1].sizeH / 2, ballList[ballList.size() - 1].sizeW / 2);
-
-                    ballList[ballList.size() - 1].ChangeDirection(direction);
-
-                    canon.Shoot(mousePos);
+                    canon.Shoot(&ballList);
                 }
             }
         }
@@ -65,19 +56,32 @@ int main(int argc, char** argv)
         //DRAW
         oWindow.clear();
 
-        truc.Draw();
-		canon.Draw();
-        canon.Rotate(Mouse::getPosition(oWindow));
+
+        for (int i = 0; i < brickList.size(); i++)
+        {
+            brickList[i].Draw();       
+        }
 
         for (int i = 0; i < ballList.size(); i++)
         {
-            ballList[i].Draw();
-            ballList[i].Move(fDeltaTime);
+
+            for (int j = 0; j < brickList.size(); j++)
+            {
+                ballList[i].Colision(brickList[j]);
+            }
+
+            if (ballList[i].WallBounce()){
+                ballList.erase(ballList.begin() + i);
+            }else{
+                ballList[i].Move(fDeltaTime);
+			    ballList[i].Draw();
+            }
+
+			
         }
 
-        //canon2.Colision(canon);
-        //canon2.Move(fDeltaTime);
-        //canon2.Draw();
+		canon.Draw();
+        canon.Rotate(Mouse::getPosition(oWindow));
 
         oWindow.display();
         

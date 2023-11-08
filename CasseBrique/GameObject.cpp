@@ -4,6 +4,7 @@
 #include <cmath>
 #include "Math.h"
 
+
 using namespace sf;
 using namespace std;
 
@@ -21,7 +22,10 @@ GameObject::GameObject(float posX, float posY, float sizeH, float sizeW, RenderW
 	shape = new RectangleShape (Vector2f(sizeH, sizeW));
 	shape->setPosition(posX, posY);
 	shape->setFillColor(color);
-	
+}
+
+GameObject::~GameObject(){
+
 }
 
 void GameObject::Draw() {
@@ -51,52 +55,62 @@ void GameObject::Rotate(Vector2i vPosition) {
 	}
 }
 
-void GameObject::Colision(GameObject gameObject) {
+bool GameObject::WallBounce() {
 	//left colision 
-	if (shape->getPosition().x < 0) {
+	if (shape->getPosition().x <= 0) {
 		posX = 0;
 		shape->setPosition(posX, posY);
+		direction.x = -direction.x;
+	}
+
+	//right colision 
+	if (shape->getPosition().x + shape->getGlobalBounds().width >= oWindow->getSize().x) {
+		posX = oWindow->getSize().x - shape->getGlobalBounds().width;
+		shape->setPosition(posX, posY);
+		direction.x = -direction.x;
 	}
 
 	//top colision 
-	if (shape->getPosition().y < 0) {
+	if (shape->getPosition().y <= 0) {
 		posY = 0;
 		shape->setPosition(posX, posY);
-	}
-
-	 //right colision 
-	if (shape->getPosition().x + shape->getGlobalBounds().width  > oWindow->getSize().x) {
-		posX = oWindow->getSize().x - shape->getGlobalBounds().width;
-		shape->setPosition(posX, posY);
+		direction.y = -direction.y;
 	}
 
 	//bottom Colision
-	if (shape->getPosition().y + shape->getGlobalBounds().height > oWindow->getSize().y) {
-		posY = oWindow->getSize().y - shape->getGlobalBounds().height;
-		shape->setPosition(posX, posY);
+	if (shape->getPosition().y + shape->getGlobalBounds().height >= oWindow->getSize().y) {
 
-		//Il faut delete le gameObject
+		return true;
 	}
 
+	return false;
+}
 
-
-
-
+void GameObject::Colision(GameObject gameObject) {
 	if (shape->getGlobalBounds().intersects(gameObject.shape->getGlobalBounds()))
 	{
 		// Collision détectée
-		shape->setFillColor(sf::Color::Red);
-		gameObject.shape->setFillColor(sf::Color::Red);
+		direction.y = -direction.y;
 	}
 	else
 	{
 		// Pas de collision
-		shape->setFillColor(sf::Color::Green);
-		gameObject.shape->setFillColor(sf::Color::Blue);
 	}
 }
 
-void GameObject::Shoot(Vector2i vPosition) {
+void GameObject::Shoot(vector<GameObject>* ballList) {
+	Vector2i mousePos = Mouse::getPosition((*oWindow));
+	Vector2f mousePosF = Vector2f(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
+	Vector2f ballStartPosition(posX, posY);
+
+	Vector2f direction = Vector2f(mousePosF.x - ballStartPosition.x, mousePosF.y - ballStartPosition.y);
+
+	ballList->push_back(GameObject(posX, posY, 10, oWindow, Color::Blue));
+
+	(*ballList)[ballList->size() - 1].shape->setOrigin((*ballList)[ballList->size() - 1].sizeH / 2, (*ballList)[ballList->size() - 1].sizeW / 2);
+
+
+	(*ballList)[ballList->size() - 1].ChangeDirection(direction);
 }
 

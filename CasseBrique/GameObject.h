@@ -4,6 +4,7 @@
 #include <vector>
 
 using namespace sf;
+using namespace std;
 
 class GameObject
 {
@@ -14,7 +15,7 @@ public:
     float sizeH = 0;
     float sizeW = 0;
     Vector2f direction; 
-    float speed = 200;
+    float speed = 1000;
     Color color;
     RenderWindow* oWindow;
     Shape* shape;
@@ -32,7 +33,10 @@ public:
     void Move(float fDeltaTime);
     void Rotate(Vector2i vPosition);
     void Colision(GameObject gameObject);
-    void Shoot(Vector2i vPosition);
+    bool WallBounce();
+    void Shoot(vector<GameObject>* ballList);
     void ChangeDirection(Vector2f direction);
+
+    ~GameObject();
 };
 

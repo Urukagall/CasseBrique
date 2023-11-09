@@ -8,6 +8,7 @@
 using namespace sf;
 using namespace std;
 
+//Créaétion de ball 
 GameObject::GameObject(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color)
 	: posX(posX), posY(posY), sizeH(sizeH), oWindow(oWindow), color(color)
 {
@@ -16,10 +17,12 @@ GameObject::GameObject(float posX, float posY, float sizeH, RenderWindow* oWindo
 	shape->setFillColor(color);
 }
 
-GameObject::GameObject(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, Color color)
-	: posX(posX), posY(posY), sizeH(sizeH), sizeW(sizeW), oWindow(oWindow)
+
+//Création de rectangle et carré 
+GameObject::GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow, Color color)
+	: posX(posX), posY(posY), sizeW(sizeW), sizeH(sizeH), oWindow(oWindow)
 {
-	shape = new RectangleShape (Vector2f(sizeH, sizeW));
+	shape = new RectangleShape (Vector2f(sizeW, sizeH));
 	shape->setPosition(posX, posY);
 	shape->setFillColor(color);
 }
@@ -28,6 +31,7 @@ GameObject::~GameObject(){
 
 }
 
+
 void GameObject::Draw() {
 	oWindow->draw(*shape);
 }
@@ -35,70 +39,132 @@ void GameObject::Draw() {
 
 void GameObject::Move(float fDeltaTime) 
 {
-
 	posX += direction.x * fDeltaTime * speed;
 	posY += direction.y * fDeltaTime * speed;
 	shape->setPosition(posX, posY);
-
 }
+
 
 void GameObject::ChangeDirection(Vector2f oDirection) {
 	direction = Math::Normalized(oDirection);
 }
 
-void GameObject::Rotate(Vector2i vPosition) {
+
+//Recentré l'origine du rectangle  
+void GameObject::CenterOrigin() {
+	if (sizeW == 0)
+	{
+		shape->setOrigin(sizeH, sizeH);
+	}
+	else {
+		shape->setOrigin(sizeW / 2, sizeH / 2);
+	}
+}
+
+
+//Rotation du Canon 
+void GameObject::CanonRotate(Vector2i vPosition) {
 	if (vPosition.y < posY) //à changer pour que l'angle soit moins de 180°
 	{
-		shape->setOrigin(sizeH / 2, 0);
+		shape->setOrigin(sizeW / 2, 0);
 		float mouseAngle = -atan2(vPosition.x - posX, vPosition.y - posY) * 180 / 3.14159;
 		shape->setRotation(mouseAngle); 
 	}
 }
 
+
+//rebond si collision avec un mur est détectée 
 bool GameObject::WallBounce() {
 	//left colision 
-	if (shape->getPosition().x <= 0) {
-		posX = 0;
+	if (shape->getPosition().x - sizeH <= 0) {
+		posX = 0 + sizeH;
 		shape->setPosition(posX, posY);
 		direction.x = -direction.x;
 	}
 
 	//right colision 
-	if (shape->getPosition().x + shape->getGlobalBounds().width >= oWindow->getSize().x) {
-		posX = oWindow->getSize().x - shape->getGlobalBounds().width;
+	if (shape->getPosition().x + shape->getGlobalBounds().width - sizeH >= oWindow->getSize().x) {
+		posX = oWindow->getSize().x - shape->getGlobalBounds().width + sizeH;
 		shape->setPosition(posX, posY);
 		direction.x = -direction.x;
 	}
 
 	//top colision 
-	if (shape->getPosition().y <= 0) {
-		posY = 0;
+	if (shape->getPosition().y - sizeH <= 0) {
+		posY = 0 + sizeH;
 		shape->setPosition(posX, posY);
 		direction.y = -direction.y;
 	}
 
-	//bottom Colision
-	if (shape->getPosition().y + shape->getGlobalBounds().height >= oWindow->getSize().y) {
-
+	//bottom destruction 
+	if (shape->getPosition().y + shape->getGlobalBounds().height - sizeH >= oWindow->getSize().y) {
 		return true;
 	}
 
 	return false;
 }
 
-void GameObject::Colision(GameObject gameObject) {
-	if (shape->getGlobalBounds().intersects(gameObject.shape->getGlobalBounds()))
+
+//Détection de la position et de l'ordre des collision 
+void GameObject::CollisionEnter(GameObject* gameobject)
+{
+
+	float distanceV = abs((*gameobject).posY - this->posY) / ((*gameobject).sizeH / 2 + this->sizeH);
+	float distanceH = abs((*gameobject).posX - this->posX) / ((*gameobject).sizeW / 2 + this->sizeH);
+
+	if (distanceV >= distanceH)
 	{
-		// Collision détectée
-		direction.y = -direction.y;
+		Bounce("vertical");
 	}
-	else
+	else if (distanceV <= distanceH)
 	{
-		// Pas de collision
+		Bounce("horizontal");
 	}
 }
 
+
+//Détection des collision 
+void GameObject::Collision(GameObject* gameobject)
+{
+
+	bool currentCollision = shape->getGlobalBounds().intersects(gameobject->shape->getGlobalBounds());
+
+	if (currentCollision)
+	{
+		// Collision 
+		if (!collisionEnter)
+		{
+			cout << "on collosion enter" << endl;
+			//CollisionEnter(brick);
+			collisionEnter = true;
+		}
+		
+	}
+	else if (collisionEnter) 
+	{
+			cout << "on collosion exit" << endl;
+			collisionEnter = false;	
+	}
+}
+
+
+//rebond si collision détectée entre les object
+void GameObject::Bounce(string sens) {
+	// Rebond
+
+	if (sens == "vertical")
+	{
+		direction.y = -direction.y;
+	}
+	else if (sens =="horizontal")
+	{
+		direction.x = -direction.x;
+	}
+}
+
+
 void GameObject::Shoot(vector<GameObject>* ballList) {
+
 	Vector2i mousePos = Mouse::getPosition((*oWindow));
 	Vector2f mousePosF = Vector2f(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
@@ -108,9 +174,18 @@ void GameObject::Shoot(vector<GameObject>* ballList) {
 
 	ballList->push_back(GameObject(posX, posY, 10, oWindow, Color::Blue));
 
-	(*ballList)[ballList->size() - 1].shape->setOrigin((*ballList)[ballList->size() - 1].sizeH / 2, (*ballList)[ballList->size() - 1].sizeW / 2);
+	(*ballList)[ballList->size() - 1].CenterOrigin();
+
 
 
 	(*ballList)[ballList->size() - 1].ChangeDirection(direction);
 }
+
+
+void GameObject::LifeBrick(GameObject* gameobject)
+{
+
+}
+
+
 

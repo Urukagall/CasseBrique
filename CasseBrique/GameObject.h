@@ -15,11 +15,13 @@ public:
     float sizeH = 0;
     float sizeW = 0;
     Vector2f direction; 
-    float speed = 1000;
+    float speed = 250;
     Color color;
     RenderWindow* oWindow;
     Shape* shape;
 
+    bool collisionEnter = false;
+    bool collisionExit = false;
 
 	FloatRect boundingBox;
 	FloatRect otherBox;
@@ -31,11 +33,17 @@ public:
 
     void Draw();
     void Move(float fDeltaTime);
-    void Rotate(Vector2i vPosition);
-    void Colision(GameObject gameObject);
-    bool WallBounce();
+	void ChangeDirection(Vector2f direction);
+	void CenterOrigin();
+    void CanonRotate(Vector2i vPosition);
+	bool WallBounce();
+	void CollisionEnter(GameObject* gameobject);
+	void Collision(GameObject* gameobject);
+    void Bounce(string sens);
     void Shoot(vector<GameObject>* ballList);
-    void ChangeDirection(Vector2f direction);
+    void LifeBrick(GameObject* gameobject);
+
+
 
     ~GameObject();
 };

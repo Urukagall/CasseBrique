@@ -24,13 +24,14 @@ int main(int argc, char** argv)
 	vector<GameObject> brickList;
     brickList.push_back(GameObject(200, 200, 100, 50, &oWindow, Color::Red));
     brickList[0].CenterOrigin();
-	brickList.push_back(GameObject(400, 200, 100, 50, &oWindow, Color::Red));
+	brickList.push_back(GameObject(305, 200, 100, 50, &oWindow, Color::Blue));
 	brickList[1].CenterOrigin();
     GameObject canon(oWindow.getSize().x / 2, 800, 50, 100, &oWindow, Color::Green);
 
-    GameObject mouseSquare(0, 0, 25, 25, &oWindow, Color::Yellow);
+    GameObject mouseSquare(0, 0, 100, 100, &oWindow, Color::Yellow);
     mouseSquare.CenterOrigin();
 
+    float frameTime = 1.0f / 360.0f;
 
     float fDeltaTime = 0.0f;
 
@@ -66,14 +67,14 @@ int main(int argc, char** argv)
         {
             brickList[i].Draw();       
         }
-
+        
         for (int i = 0; i < ballList.size(); i++)
         {
-
-            for (int j = 0; j < brickList.size(); j++)
+            ballList[i].Collision(&brickList);
+            /*for (int j = 0; j < brickList.size(); j++)
             {
                 ballList[i].Collision(&brickList[j]);
-            }
+            }*/
 
             if (ballList[i].WallBounce()){
                 ballList.erase(ballList.begin() + i);
@@ -85,10 +86,8 @@ int main(int argc, char** argv)
 			
         }
 
-        for (int j = 0; j < brickList.size(); j++)
-        {
-            mouseSquare.Collision(&brickList[j]);
-        }
+        mouseSquare.Collision(&brickList);
+        
 
         mouseSquare.posX = Mouse::getPosition(oWindow).x;
         mouseSquare.posY = Mouse::getPosition(oWindow).y;
@@ -102,6 +101,11 @@ int main(int argc, char** argv)
         oWindow.display();
         
         fDeltaTime = oClock.restart().asSeconds();
+
+        if (fDeltaTime < frameTime)
+        {
+            sf::sleep(seconds(frameTime - fDeltaTime));
+        }
     }
 
     return 0;

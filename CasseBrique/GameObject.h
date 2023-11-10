@@ -15,13 +15,15 @@ public:
     float sizeH = 0;
     float sizeW = 0;
     Vector2f direction; 
-    float speed = 250;
+    float speed = 750;
     Color color;
     RenderWindow* oWindow;
     Shape* shape;
 
     bool collisionEnter = false;
     bool collisionExit = false;
+    int collisionPersistCounter = 0;
+    int collisionThreshold = 4;
 
 	FloatRect boundingBox;
 	FloatRect otherBox;
@@ -38,7 +40,8 @@ public:
     void CanonRotate(Vector2i vPosition);
 	bool WallBounce();
 	void CollisionEnter(GameObject* gameobject);
-	void Collision(GameObject* gameobject);
+	void CollisionExit();
+    void Collision(vector<GameObject>* brickList);
     void Bounce(string sens);
     void Shoot(vector<GameObject>* ballList);
     void LifeBrick(GameObject* gameobject);

@@ -105,10 +105,9 @@ bool GameObject::WallBounce() {
 }
 
 
-//Détection de la position et de l'ordre des collision 
 void GameObject::CollisionEnter(GameObject* gameobject)
 {
-
+	collisionEnter = true;
 	float distanceV = abs((*gameobject).posY - this->posY) / ((*gameobject).sizeH / 2 + this->sizeH);
 	float distanceH = abs((*gameobject).posX - this->posX) / ((*gameobject).sizeW / 2 + this->sizeH);
 
@@ -123,28 +122,74 @@ void GameObject::CollisionEnter(GameObject* gameobject)
 }
 
 
-//Détection des collision 
-void GameObject::Collision(GameObject* gameobject)
+
+
+void GameObject::CollisionExit()
 {
+	collisionEnter = false;
+}
 
-	bool currentCollision = shape->getGlobalBounds().intersects(gameobject->shape->getGlobalBounds());
 
-	if (currentCollision)
+//Détection des collision 
+void GameObject::Collision(vector<GameObject>* brickList)
+{
+	bool isCollision = false;
+	for (int j = 0; j < brickList->size(); j++)
+	{
+		bool currentCollision = shape->getGlobalBounds().intersects((*brickList)[j].shape->getGlobalBounds());
+
+		if (currentCollision)
+		{
+			if (!isCollision and !collisionEnter)
+			{
+				cout << "enter" << endl;
+				isCollision = true;
+				CollisionEnter(&(*brickList)[j]);
+				break;
+				//Mettre la collsion seulement pour la brick la plus proche de la balle
+			}
+			else {
+				isCollision = true;
+				break;
+			}
+		}
+	}
+
+	if (!isCollision and collisionEnter)
+	{
+		cout << "exit" << endl;
+		CollisionExit();
+	}
+
+
+	/*if (currentCollision)
+	{
+		return true;
+	}
+	else {
+		return false;
+	}*/
+
+	/*if (currentCollision)
 	{
 		// Collision 
 		if (!collisionEnter)
 		{
 			cout << "on collosion enter" << endl;
-			//CollisionEnter(brick);
+			CollisionEnter(gameobject);
 			collisionEnter = true;
+			return true;
 		}
-		
 	}
-	else if (collisionEnter) 
+
+	else if (collisionEnter)
 	{
 			cout << "on collosion exit" << endl;
-			collisionEnter = false;	
+			collisionEnter = false;
+			return false;
 	}
+
+	return false;*/
 }
 
 

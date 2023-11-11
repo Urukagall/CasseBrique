@@ -39,7 +39,7 @@ public:
 	void CenterOrigin();
     void CanonRotate(Vector2i vPosition);
 	bool WallBounce();
-	void CollisionEnter(GameObject* gameobject);
+    float CollisionEnter(GameObject* gameobject, bool canBounce);
 	void CollisionExit();
     void Collision(vector<GameObject>* brickList);
     void Bounce(string sens);

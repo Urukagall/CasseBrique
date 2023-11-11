@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include "Math.h"
+#include <vector>
 
 
 using namespace sf;
@@ -105,20 +106,32 @@ bool GameObject::WallBounce() {
 }
 
 
-void GameObject::CollisionEnter(GameObject* gameobject)
+float GameObject::CollisionEnter(GameObject* gameobject, bool canBounce)
 {
-	collisionEnter = true;
 	float distanceV = abs((*gameobject).posY - this->posY) / ((*gameobject).sizeH / 2 + this->sizeH);
 	float distanceH = abs((*gameobject).posX - this->posX) / ((*gameobject).sizeW / 2 + this->sizeH);
 
 	if (distanceV >= distanceH)
 	{
-		Bounce("vertical");
+		if (!canBounce)
+		{
+			return distanceV;
+		}
+		else {
+			Bounce("vertical");
+		}
 	}
 	else if (distanceV <= distanceH)
 	{
-		Bounce("horizontal");
+		if (!canBounce)
+		{
+			return distanceH;
+		}
+		else {
+			Bounce("horizontal");
+		}
 	}
+	return 0;
 }
 
 
@@ -133,63 +146,37 @@ void GameObject::CollisionExit()
 //Détection des collision 
 void GameObject::Collision(vector<GameObject>* brickList)
 {
-	bool isCollision = false;
-	for (int j = 0; j < brickList->size(); j++)
+	std::pair<float, int> nearestBrick = { std::numeric_limits<float>::infinity(), -1 };
+
+	for (int i = 0; i < brickList->size(); i++)
 	{
-		bool currentCollision = shape->getGlobalBounds().intersects((*brickList)[j].shape->getGlobalBounds());
+		bool currentCollision = shape->getGlobalBounds().intersects((*brickList)[i].shape->getGlobalBounds());
 
 		if (currentCollision)
 		{
-			if (!isCollision and !collisionEnter)
+			float distance = CollisionEnter(&(*brickList)[i], false);
+
+			if (distance < nearestBrick.first)
 			{
-				cout << "enter" << endl;
-				isCollision = true;
-				CollisionEnter(&(*brickList)[j]);
-				break;
-				//Mettre la collsion seulement pour la brick la plus proche de la balle
-			}
-			else {
-				isCollision = true;
-				break;
+				nearestBrick = { distance, i };
 			}
 		}
 	}
 
-	if (!isCollision and collisionEnter)
+	if (nearestBrick.second != -1)
+	{
+		if (!collisionEnter)
+		{
+			cout << "enter" << endl;
+			collisionEnter = true;
+			CollisionEnter(&(*brickList)[nearestBrick.second], true);
+		}
+	}
+	else if (collisionEnter)
 	{
 		cout << "exit" << endl;
 		CollisionExit();
 	}
-
-
-	/*if (currentCollision)
-	{
-		return true;
-	}
-	else {
-		return false;
-	}*/
-
-	/*if (currentCollision)
-	{
-		// Collision 
-		if (!collisionEnter)
-		{
-			cout << "on collosion enter" << endl;
-			CollisionEnter(gameobject);
-			collisionEnter = true;
-			return true;
-		}
-	}
-
-	else if (collisionEnter)
-	{
-			cout << "on collosion exit" << endl;
-			collisionEnter = false;
-			return false;
-	}
-
-	return false;*/
 }
 
 

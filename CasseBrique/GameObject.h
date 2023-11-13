@@ -3,6 +3,7 @@
 #include <SFML/System.hpp>
 #include <vector>
 
+
 using namespace sf;
 using namespace std;
 
@@ -15,7 +16,7 @@ public:
     float sizeH = 0;
     float sizeW = 0;
     Vector2f direction; 
-    float speed = 750;
+    float speed = 500;
     Color color;
     RenderWindow* oWindow;
     Shape* shape;
@@ -28,24 +29,27 @@ public:
 	FloatRect boundingBox;
 	FloatRect otherBox;
 
-
-
     GameObject(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color);
     GameObject(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, Color color);
+    
+    void CenterOrigin();
+    void Draw();
 
+
+    /*
     void Draw();
     void Move(float fDeltaTime);
 	void ChangeDirection(Vector2f direction);
 	void CenterOrigin();
     void CanonRotate(Vector2i vPosition);
 	bool WallBounce();
-    float CollisionEnter(GameObject* gameobject, bool canBounce);
+    float CollisionEnter(Brick* brick, bool canBounce);
 	void CollisionExit();
-    void Collision(vector<GameObject>* brickList);
+    void Collision(vector<Brick>* brickList);
     void Bounce(string sens);
     void Shoot(vector<GameObject>* ballList);
     void LifeBrick(GameObject* gameobject);
-
+    */
 
 
     ~GameObject();

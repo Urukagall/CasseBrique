@@ -1,5 +1,5 @@
 #include <iostream>
-#include "GameObject.h"
+#include "Ball.h"
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include "Math.h"
@@ -10,50 +10,20 @@ using namespace sf;
 using namespace std;
 
 //Créaétion de ball 
-GameObject::GameObject(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color)
-	: posX(posX), posY(posY), sizeH(sizeH), oWindow(oWindow), color(color)
+Ball::Ball(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color)
+	: GameObject(posX, posY, sizeH, oWindow, color)
 {
-	shape = new CircleShape(sizeH);
-	shape->setPosition(posX, posY);
-	shape->setFillColor(color);
+}
+
+Ball::~Ball() {
+
 }
 
 
-//Création de rectangle et carré 
-GameObject::GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow, Color color)
-	: posX(posX), posY(posY), sizeW(sizeW), sizeH(sizeH), oWindow(oWindow)
-{
-	shape = new RectangleShape (Vector2f(sizeW, sizeH));
-	shape->setPosition(posX, posY);
-	shape->setFillColor(color);
-}
-
-GameObject::~GameObject(){
-
-}
-
-void GameObject::Draw() {
-	oWindow->draw(*shape);
-}
-
-//Recentré l'origine du rectangle  
-void GameObject::CenterOrigin() {
-	if (sizeW == 0)
-	{
-		shape->setOrigin(sizeH, sizeH);
-	}
-	else {
-		shape->setOrigin(sizeW / 2, sizeH / 2);
-	}
-}
-
-/*
-void GameObject::Draw() {
-	oWindow->draw(*shape);
-}
 
 
-void GameObject::Move(float fDeltaTime) 
+
+void Ball::Move(float fDeltaTime)
 {
 	posX += direction.x * fDeltaTime * speed;
 	posY += direction.y * fDeltaTime * speed;
@@ -61,36 +31,13 @@ void GameObject::Move(float fDeltaTime)
 }
 
 
-void GameObject::ChangeDirection(Vector2f oDirection) {
+void Ball::ChangeDirection(Vector2f oDirection) {
 	direction = Math::Normalized(oDirection);
 }
 
 
-//Recentré l'origine du rectangle  
-void GameObject::CenterOrigin() {
-	if (sizeW == 0)
-	{
-		shape->setOrigin(sizeH, sizeH);
-	}
-	else {
-		shape->setOrigin(sizeW / 2, sizeH / 2);
-	}
-}
-
-
-//Rotation du Canon 
-void GameObject::CanonRotate(Vector2i vPosition) {
-	if (vPosition.y < posY) //à changer pour que l'angle soit moins de 180°
-	{
-		shape->setOrigin(sizeW / 2, 0);
-		float mouseAngle = -atan2(vPosition.x - posX, vPosition.y - posY) * 180 / 3.14159;
-		shape->setRotation(mouseAngle); 
-	}
-}
-
-
 //rebond si collision avec un mur est détectée 
-bool GameObject::WallBounce() {
+bool Ball::WallBounce() {
 	//left colision 
 	if (shape->getPosition().x - sizeH <= 0) {
 		posX = 0 + sizeH;
@@ -120,8 +67,7 @@ bool GameObject::WallBounce() {
 	return false;
 }
 
-
-float GameObject::CollisionEnter(Brick* brick, bool canBounce)
+float Ball::CollisionEnter(Brick* brick, bool canBounce)
 {
 	float distanceV = abs((*brick).posY - this->posY) / ((*brick).sizeH / 2 + this->sizeH);
 	float distanceH = abs((*brick).posX - this->posX) / ((*brick).sizeW / 2 + this->sizeH);
@@ -134,6 +80,7 @@ float GameObject::CollisionEnter(Brick* brick, bool canBounce)
 		}
 		else {
 			Bounce("vertical");
+			brick->LooseLife(brick);
 		}
 	}
 	else if (distanceV <= distanceH)
@@ -144,6 +91,7 @@ float GameObject::CollisionEnter(Brick* brick, bool canBounce)
 		}
 		else {
 			Bounce("horizontal");
+			brick->LooseLife(brick);
 		}
 	}
 	return 0;
@@ -152,14 +100,14 @@ float GameObject::CollisionEnter(Brick* brick, bool canBounce)
 
 
 
-void GameObject::CollisionExit()
+void Ball::CollisionExit()
 {
 	collisionEnter = false;
 }
 
 
 //Détection des collision 
-void GameObject::Collision(vector<Brick>* brickList)
+void Ball::Collision(vector<Brick>* brickList)
 {
 	std::pair<float, int> nearestBrick = { std::numeric_limits<float>::infinity(), -1 };
 
@@ -173,7 +121,6 @@ void GameObject::Collision(vector<Brick>* brickList)
 
 			if (distance < nearestBrick.first)
 			{
-				cout << distance << endl;
 				nearestBrick = { distance, i };
 			}
 		}
@@ -197,21 +144,21 @@ void GameObject::Collision(vector<Brick>* brickList)
 
 
 //rebond si collision détectée entre les object
-void GameObject::Bounce(string sens) {
+void Ball::Bounce(string sens) {
 	// Rebond
 
 	if (sens == "vertical")
 	{
 		direction.y = -direction.y;
 	}
-	else if (sens =="horizontal")
+	else if (sens == "horizontal")
 	{
 		direction.x = -direction.x;
 	}
 }
 
 
-void GameObject::Shoot(vector<GameObject>* ballList) {
+void Ball::Shoot(vector<Ball>* ballList) {
 
 	Vector2i mousePos = Mouse::getPosition((*oWindow));
 	Vector2f mousePosF = Vector2f(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
@@ -220,7 +167,7 @@ void GameObject::Shoot(vector<GameObject>* ballList) {
 
 	Vector2f direction = Vector2f(mousePosF.x - ballStartPosition.x, mousePosF.y - ballStartPosition.y);
 
-	ballList->push_back(GameObject(posX, posY, 10, oWindow, Color::Blue));
+	ballList->push_back(Ball(posX, posY, 10, oWindow, Color::Blue));
 
 	(*ballList)[ballList->size() - 1].CenterOrigin();
 
@@ -228,13 +175,3 @@ void GameObject::Shoot(vector<GameObject>* ballList) {
 
 	(*ballList)[ballList->size() - 1].ChangeDirection(direction);
 }
-
-
-void GameObject::LifeBrick(GameObject* gameobject)
-{
-
-}
-
-
-
-*/

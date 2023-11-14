@@ -33,7 +33,7 @@ public:
 
 	static void Init();
 	static GameManager* Get();
-	static vector<vector<Brick>> loadBricksFromJson(const std::string& filename, sf::RenderWindow* oWindow);
+	static vector<Brick> loadBricksFromTxt(const string& filename, sf::RenderWindow* oWindow);
 	void GameLoop(RenderWindow* oWindow);
 
 

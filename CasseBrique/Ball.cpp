@@ -80,7 +80,7 @@ float Ball::CollisionEnter(Brick* brick, bool canBounce)
 		}
 		else {
 			Bounce("vertical");
-			brick->LooseLife(brick);
+			brick->LooseLife();
 		}
 	}
 	else if (distanceV <= distanceH)
@@ -91,7 +91,7 @@ float Ball::CollisionEnter(Brick* brick, bool canBounce)
 		}
 		else {
 			Bounce("horizontal");
-			brick->LooseLife(brick);
+			brick->LooseLife();
 		}
 	}
 	return 0;

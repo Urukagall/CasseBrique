@@ -2,7 +2,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-#include <nlohmann/json.hpp>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -28,8 +27,6 @@ GameManager::GameManager() {
 
 GameManager* GameManager::pInstance = nullptr;
 
-
-
 void GameManager::Init()
 {
 	GameManager::pInstance = new GameManager();
@@ -40,43 +37,57 @@ GameManager* GameManager::Get()
 	return GameManager::pInstance;
 }
 
-vector<vector<Brick>> GameManager::loadBricksFromJson(const string& filename, sf::RenderWindow* oWindow) {
-	vector<vector<Brick>> bricks;
+vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderWindow* oWindow) {
+	vector<Brick> bricks;
 
 	ifstream file(filename);
 	if (!file.is_open()) {
-		cerr << "Erreur lors de l'ouverture du fichier JSON." << endl;
+		cerr << "Erreur lors de l'ouverture du fichier TXT." << endl;
 		return bricks;
 	}
 
-	// Charger le contenu du fichier JSON dans une chaîne
-	stringstream buffer;
-	buffer << file.rdbuf();
-	string jsonContent = buffer.str();
+	string line;
+	int row = 0;
 
-	// Analyser le JSON
-	auto json = json::parse(jsonContent);
+	while (getline(file, line)) {
+		vector<Brick> brickRow;
 
-	// Assurez-vous que le champ "level" existe
-	if (json.find("level") != json.end()) {
-		// Récupérer le tableau "level"
-		auto levelArray = json["level"];
+		if (line.size() <= 9)
+		{
+			for (size_t i = 0; i < line.size(); ++i) {
+				int life = line[i] - '0';  // Convertir le caractère en entier
 
-		for (const auto& row : levelArray) {
-			vector<Brick> brickRow;
+				// Créer une brique avec les données spécifiques
+				Brick brick(i * 100, row * 25, 100, 25, life, oWindow, "Brick1");
+				brick.ChangeColor();
 
-			for (const auto& life : row) {
-				// Créer une brique avec la valeur de vie
-				Brick brick(0, 0, 100, 25, life, oWindow, Color::Blue);
-				brickRow.push_back(brick);
+				// Ajouter la brique à la rangée
+				bricks.push_back(brick);
 			}
-
-			bricks.push_back(brickRow);
 		}
+		else {
+			for (size_t i = 0; i < 9; ++i) {
+				int life = line[i] - '0';  // Convertir le caractère en entier
+
+				// Créer une brique avec les données spécifiques
+				Brick brick(i * 100, row * 25, 100, 25, life, oWindow, "Brick1");
+				brick.ChangeColor();
+
+				// Ajouter la brique à la rangée
+				bricks.push_back(brick);
+			}
+		}
+
+		// Ajouter la rangée à la liste globale
+		//bricks.push_back(brickRow);
+
+		++row;
 	}
 
 	return bricks;
 }
+
+
 
 
 void GameManager::GameLoop(RenderWindow* oWindow) {
@@ -89,7 +100,7 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 	brickList[1].CenterOrigin();
 	*/
 
-	loadBricksFromJson("level.json", oWindow);
+	brickList = loadBricksFromTxt("level.txt", oWindow);
 
 
 	canon = new Canon(oWindow->getSize().x / 2, 800, 25, 50, oWindow, Color::Green);
@@ -139,7 +150,7 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 		for (int i = 0; i < brickList.size(); i++)
 		{
 			brickList[i].Draw();
-			if (brickList[i].DetectDeath(&brickList[i]))
+			if (brickList[i].DetectDeath())
 			{
 				brickList.erase(brickList.begin() + i);
 			}

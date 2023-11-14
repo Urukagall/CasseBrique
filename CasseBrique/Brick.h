@@ -12,12 +12,15 @@ class Brick : public GameObject
 public:
 
 	int life;
+	Texture texture;
 
-	Brick(float posX, float posY, float sizeH, float sizeW, int life, RenderWindow* oWindow, Color color);
+	//Brick(float posX, float posY, float sizeH, float sizeW, int life, RenderWindow* oWindow, Color color);
+	Brick(float posX, float posY, float sizeH, float sizeW, int life, RenderWindow* oWindow, const string& textureFile);
 
-	void LooseLife(Brick* brick);
-	void ChangeColor(Brick* brick); 
-	bool DetectDeath(Brick* brick);
+
+	void LooseLife();
+	void ChangeColor(); 
+	bool DetectDeath();
 	~Brick();
 };
 

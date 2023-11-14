@@ -2,6 +2,7 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <nlohmann/json.hpp>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -39,58 +40,44 @@ GameManager* GameManager::Get()
 	return GameManager::pInstance;
 }
 
-vector<Brick> GameManager::loadBricksFromJson(const std::string& filename, sf::RenderWindow* oWindow) {
-	std::vector<Brick> bricks;
+vector<vector<Brick>> GameManager::loadBricksFromJson(const string& filename, sf::RenderWindow* oWindow) {
+	vector<vector<Brick>> bricks;
 
-	std::ifstream file(filename);
+	ifstream file(filename);
 	if (!file.is_open()) {
-		std::cerr << "Erreur lors de l'ouverture du fichier JSON." << std::endl;
+		cerr << "Erreur lors de l'ouverture du fichier JSON." << endl;
 		return bricks;
 	}
 
-	std::stringstream buffer;
+	// Charger le contenu du fichier JSON dans une chaîne
+	stringstream buffer;
 	buffer << file.rdbuf();
+	string jsonContent = buffer.str();
 
-	std::string jsonContent = buffer.str();
+	// Analyser le JSON
+	auto json = json::parse(jsonContent);
 
-	// Assurez-vous que le fichier JSON est bien formé et suit une structure spécifique
-	size_t pos = jsonContent.find("[[");
-	if (pos == std::string::npos) {
-		std::cerr << "Structure JSON incorrecte." << std::endl;
-		return bricks;
-	}
+	// Assurez-vous que le champ "level" existe
+	if (json.find("level") != json.end()) {
+		// Récupérer le tableau "level"
+		auto levelArray = json["level"];
 
-	// Extraire la partie du JSON contenant les données des briques
-	std::string bricksJson = jsonContent.substr(pos);
+		for (const auto& row : levelArray) {
+			vector<Brick> brickRow;
 
-	// Parsez manuellement la chaîne JSON pour extraire les données des briques
-	std::istringstream ss(bricksJson);
-	std::string token;
+			for (const auto& life : row) {
+				// Créer une brique avec la valeur de vie
+				Brick brick(0, 0, 100, 25, life, oWindow, Color::Blue);
+				brickRow.push_back(brick);
+			}
 
-	while (std::getline(ss, token, ']')) {
-		std::vector<std::string> brickData;
-
-		// Utilisez un autre délimiteur pour séparer les valeurs de la brique
-		std::istringstream brickStream(token.substr(2));
-		while (std::getline(brickStream, token, ',')) {
-			brickData.push_back(token);
-		}
-
-		if (brickData.size() >= 6) {
-			float posX = std::stof(brickData[0]);
-			float posY = std::stof(brickData[1]);
-			float sizeH = std::stof(brickData[2]);
-			float sizeW = std::stof(brickData[3]);
-			int life = std::stoi(brickData[4]);
-			sf::Color color = sf::Color(std::stoi(brickData[5]));
-
-			Brick brick(posX, posY, sizeH, sizeW, life, oWindow, color);
-			bricks.push_back(brick);
+			bricks.push_back(brickRow);
 		}
 	}
-	cout << bricks.size() << endl;
+
 	return bricks;
 }
+
 
 void GameManager::GameLoop(RenderWindow* oWindow) {
 	Clock oClock;
@@ -102,7 +89,7 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 	brickList[1].CenterOrigin();
 	*/
 
-	//brickList = loadBricksFromJson("level.json", oWindow);
+	loadBricksFromJson("level.json", oWindow);
 
 
 	canon = new Canon(oWindow->getSize().x / 2, 800, 25, 50, oWindow, Color::Green);

@@ -16,6 +16,7 @@ public:
 	Brick(float posX, float posY, float sizeH, float sizeW, int life, RenderWindow* oWindow, Color color);
 
 	void LooseLife(Brick* brick);
+	void ChangeColor(Brick* brick); 
 	bool DetectDeath(Brick* brick);
 	~Brick();
 };

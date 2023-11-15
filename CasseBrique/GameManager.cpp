@@ -13,6 +13,7 @@ using namespace std;
 
 
 GameManager::GameManager() {
+	
 	//Création d'une fenêtre
 
 	//sf::RenderWindow window(fullscreenMode, "SFML Fullscreen", sf::Style::Fullscreen);
@@ -50,15 +51,14 @@ vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderW
 	int row = 0;
 
 	while (getline(file, line)) {
-		vector<Brick> brickRow;
 
 		if (line.size() <= 9)
 		{
 			for (size_t i = 0; i < line.size(); ++i) {
 				int life = line[i] - '0';  // Convertir le caractère en entier
-
 				// Créer une brique avec les données spécifiques
-				Brick brick(i * 100, row * 25, 100, 25, life, oWindow, "Brick1");
+				Brick brick(i * 100 + 50, row * 25 + 12.5, 100, 25, life, oWindow);
+				brick.CenterOrigin();
 				brick.ChangeColor();
 
 				// Ajouter la brique à la rangée
@@ -70,7 +70,8 @@ vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderW
 				int life = line[i] - '0';  // Convertir le caractère en entier
 
 				// Créer une brique avec les données spécifiques
-				Brick brick(i * 100, row * 25, 100, 25, life, oWindow, "Brick1");
+				Brick brick(i * 100, row * 25, 100, 25, life, oWindow);
+				brick.CenterOrigin();
 				brick.ChangeColor();
 
 				// Ajouter la brique à la rangée
@@ -79,8 +80,6 @@ vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderW
 		}
 
 		// Ajouter la rangée à la liste globale
-		//bricks.push_back(brickRow);
-
 		++row;
 	}
 
@@ -93,20 +92,16 @@ vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderW
 void GameManager::GameLoop(RenderWindow* oWindow) {
 	Clock oClock;
 	//GameLoop
-	/*
-	brickList.push_back(Brick(200, 200, 100, 25, 1, oWindow, Color::Red));
-	brickList[0].CenterOrigin();
-	brickList.push_back(Brick(300, 200, 100, 25, 2, oWindow, Color::Blue));
-	brickList[1].CenterOrigin();
-	*/
 
 	brickList = loadBricksFromTxt("level.txt", oWindow);
 
 
 	canon = new Canon(oWindow->getSize().x / 2, 800, 25, 50, oWindow, Color::Green);
 
+
 	while (oWindow->isOpen())
 	{
+		//mouseSquare = new Brick(0, 0, 25, 25, 9, oWindow);
 
 		//EVENT
 		Event oEvent;
@@ -125,6 +120,16 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 				}
 			}
 		}
+		/*
+		if (brickList.size() != 0)
+		{
+		
+		}
+		else
+		{
+			break;
+		}*/
+
 
 		//UPDATE
 
@@ -149,21 +154,24 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 
 		for (int i = 0; i < brickList.size(); i++)
 		{
+			textureManager.ChangeBrickTexture(&brickList[i]);
 			brickList[i].Draw();
 			if (brickList[i].DetectDeath())
 			{
 				brickList.erase(brickList.begin() + i);
 			}
 		}
-		/*
-		mouseSquare.Collision(&brickList);
+		
+		//mouseSquare->CenterOrigin();
 
-		mouseSquare.posX = Mouse::getPosition(oWindow).x;
-		mouseSquare.posY = Mouse::getPosition(oWindow).y;
+		//mouseSquare->Collision(&brickList);
 
-		//mouseSquare.Move(fDeltaTime);
-		//mouseSquare.Draw();
-		*/
+		//mouseSquare->posX = Mouse::getPosition(*oWindow).x;
+		//mouseSquare->posY = Mouse::getPosition(*oWindow).y;
+
+		//mouseSquare->Move(fDeltaTime);
+		//mouseSquare->Draw();
+		
 		canon->CanonRotate(Mouse::getPosition(*oWindow));
 		canon->Draw();
 
@@ -173,8 +181,8 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 
 		if (fDeltaTime < frameTime)
 		{
-			sf::sleep(seconds(frameTime - fDeltaTime));
+			sleep(seconds(frameTime - fDeltaTime));
 		}
 	}
-
+	
 }

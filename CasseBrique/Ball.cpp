@@ -22,7 +22,7 @@ Ball::~Ball() {
 
 
 
-
+//mouvement des ball
 void Ball::Move(float fDeltaTime)
 {
 	posX += direction.x * fDeltaTime * speed;
@@ -30,7 +30,7 @@ void Ball::Move(float fDeltaTime)
 	shape->setPosition(posX, posY);
 }
 
-
+//Gestion du vecteur directeur des ball
 void Ball::ChangeDirection(Vector2f oDirection) {
 	direction = Math::Normalized(oDirection);
 }
@@ -67,8 +67,10 @@ bool Ball::WallBounce() {
 	return false;
 }
 
+//Détection des Première colisions 
 float Ball::CollisionEnter(Brick* brick, bool canBounce)
 {
+
 	float distanceV = abs((*brick).posY - this->posY) / ((*brick).sizeH / 2 + this->sizeH);
 	float distanceH = abs((*brick).posX - this->posX) / ((*brick).sizeW / 2 + this->sizeH);
 
@@ -79,6 +81,7 @@ float Ball::CollisionEnter(Brick* brick, bool canBounce)
 			return distanceV;
 		}
 		else {
+			cout << "vertical" << (*brick).posY << "   " << this->posY << endl;
 			Bounce("vertical");
 			brick->LooseLife();
 		}
@@ -90,6 +93,7 @@ float Ball::CollisionEnter(Brick* brick, bool canBounce)
 			return distanceH;
 		}
 		else {
+			cout << "horizontal" << (*brick).posX << "   " << this->posX << endl;
 			Bounce("horizontal");
 			brick->LooseLife();
 		}
@@ -99,7 +103,7 @@ float Ball::CollisionEnter(Brick* brick, bool canBounce)
 
 
 
-
+//Sortie des collision 
 void Ball::CollisionExit()
 {
 	collisionEnter = false;
@@ -108,7 +112,7 @@ void Ball::CollisionExit()
 
 //Détection des collision 
 void Ball::Collision(vector<Brick>* brickList)
-{
+{ 
 	std::pair<float, int> nearestBrick = { std::numeric_limits<float>::infinity(), -1 };
 
 	for (int i = 0; i < brickList->size(); i++)
@@ -158,6 +162,7 @@ void Ball::Bounce(string sens) {
 }
 
 
+//Aplication sur la ball de la fonction shoot 
 void Ball::Shoot(vector<Ball>* ballList) {
 
 	Vector2i mousePos = Mouse::getPosition((*oWindow));

@@ -12,16 +12,10 @@ using namespace std;
 
 
 //Création des Brick 
-Brick::Brick(float posX, float posY, float sizeW, float sizeH, int life, RenderWindow* oWindow, const string& textureFile)
-	: GameObject(posX, posY, sizeW, sizeH, oWindow, Color::White)
+Brick::Brick(float posX, float posY, float sizeW, float sizeH, int life, RenderWindow* oWindow)
+	: GameObject(posX, posY, sizeW, sizeH, oWindow)
 {
 	this->life = life;
-	if (!texture.loadFromFile(textureFile)) {
-		cerr << "Erreur lors du chargement de la texture pour la brique." << endl;
-		// Gérer l'erreur, par exemple en utilisant une texture de secours ou en quittant l'application.
-	}
-
-	shape->setTexture(&texture);	
 }
 
 Brick::~Brick() {
@@ -50,7 +44,8 @@ void Brick::ChangeColor()
 	{
 		color = Color::Green;
 	}
-	shape->setFillColor(color);
+	//a changer 
+	//shape->setFillColor(color);
 }
 
 

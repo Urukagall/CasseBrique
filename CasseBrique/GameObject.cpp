@@ -23,9 +23,20 @@ GameObject::GameObject(float posX, float posY, float sizeH, RenderWindow* oWindo
 GameObject::GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow, Color color)
 	: posX(posX), posY(posY), sizeW(sizeW), sizeH(sizeH), oWindow(oWindow)
 {
-	shape = new RectangleShape (Vector2f(sizeW, sizeH));
+	shape = new RectangleShape(Vector2f(sizeW, sizeH));
 	shape->setPosition(posX, posY);
 	shape->setFillColor(color);
+}
+
+//Création d'une image
+GameObject::GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow)
+	: posX(posX), posY(posY), sizeW(sizeW), sizeH(sizeH), oWindow(oWindow)
+{
+	
+	shape = new RectangleShape(Vector2f(sizeW, sizeH));
+	shape->setPosition(posX, posY);
+	//shape->setTexture(&texture);
+	
 }
 
 GameObject::~GameObject(){
@@ -46,195 +57,3 @@ void GameObject::CenterOrigin() {
 		shape->setOrigin(sizeW / 2, sizeH / 2);
 	}
 }
-
-/*
-void GameObject::Draw() {
-	oWindow->draw(*shape);
-}
-
-
-void GameObject::Move(float fDeltaTime) 
-{
-	posX += direction.x * fDeltaTime * speed;
-	posY += direction.y * fDeltaTime * speed;
-	shape->setPosition(posX, posY);
-}
-
-
-void GameObject::ChangeDirection(Vector2f oDirection) {
-	direction = Math::Normalized(oDirection);
-}
-
-
-//Recentré l'origine du rectangle  
-void GameObject::CenterOrigin() {
-	if (sizeW == 0)
-	{
-		shape->setOrigin(sizeH, sizeH);
-	}
-	else {
-		shape->setOrigin(sizeW / 2, sizeH / 2);
-	}
-}
-
-
-//Rotation du Canon 
-void GameObject::CanonRotate(Vector2i vPosition) {
-	if (vPosition.y < posY) //à changer pour que l'angle soit moins de 180°
-	{
-		shape->setOrigin(sizeW / 2, 0);
-		float mouseAngle = -atan2(vPosition.x - posX, vPosition.y - posY) * 180 / 3.14159;
-		shape->setRotation(mouseAngle); 
-	}
-}
-
-
-//rebond si collision avec un mur est détectée 
-bool GameObject::WallBounce() {
-	//left colision 
-	if (shape->getPosition().x - sizeH <= 0) {
-		posX = 0 + sizeH;
-		shape->setPosition(posX, posY);
-		direction.x = -direction.x;
-	}
-
-	//right colision 
-	if (shape->getPosition().x + shape->getGlobalBounds().width - sizeH >= oWindow->getSize().x) {
-		posX = oWindow->getSize().x - shape->getGlobalBounds().width + sizeH;
-		shape->setPosition(posX, posY);
-		direction.x = -direction.x;
-	}
-
-	//top colision 
-	if (shape->getPosition().y - sizeH <= 0) {
-		posY = 0 + sizeH;
-		shape->setPosition(posX, posY);
-		direction.y = -direction.y;
-	}
-
-	//bottom destruction 
-	if (shape->getPosition().y + shape->getGlobalBounds().height - sizeH >= oWindow->getSize().y) {
-		return true;
-	}
-
-	return false;
-}
-
-
-float GameObject::CollisionEnter(Brick* brick, bool canBounce)
-{
-	float distanceV = abs((*brick).posY - this->posY) / ((*brick).sizeH / 2 + this->sizeH);
-	float distanceH = abs((*brick).posX - this->posX) / ((*brick).sizeW / 2 + this->sizeH);
-
-	if (distanceV >= distanceH)
-	{
-		if (!canBounce)
-		{
-			return distanceV;
-		}
-		else {
-			Bounce("vertical");
-		}
-	}
-	else if (distanceV <= distanceH)
-	{
-		if (!canBounce)
-		{
-			return distanceH;
-		}
-		else {
-			Bounce("horizontal");
-		}
-	}
-	return 0;
-}
-
-
-
-
-void GameObject::CollisionExit()
-{
-	collisionEnter = false;
-}
-
-
-//Détection des collision 
-void GameObject::Collision(vector<Brick>* brickList)
-{
-	std::pair<float, int> nearestBrick = { std::numeric_limits<float>::infinity(), -1 };
-
-	for (int i = 0; i < brickList->size(); i++)
-	{
-		bool currentCollision = shape->getGlobalBounds().intersects((*brickList)[i].shape->getGlobalBounds());
-
-		if (currentCollision)
-		{
-			float distance = CollisionEnter(&(*brickList)[i], false);
-
-			if (distance < nearestBrick.first)
-			{
-				cout << distance << endl;
-				nearestBrick = { distance, i };
-			}
-		}
-	}
-
-	if (nearestBrick.second != -1)
-	{
-		if (!collisionEnter)
-		{
-			cout << "enter" << endl;
-			collisionEnter = true;
-			CollisionEnter(&(*brickList)[nearestBrick.second], true);
-		}
-	}
-	else if (collisionEnter)
-	{
-		cout << "exit" << endl;
-		CollisionExit();
-	}
-}
-
-
-//rebond si collision détectée entre les object
-void GameObject::Bounce(string sens) {
-	// Rebond
-
-	if (sens == "vertical")
-	{
-		direction.y = -direction.y;
-	}
-	else if (sens =="horizontal")
-	{
-		direction.x = -direction.x;
-	}
-}
-
-
-void GameObject::Shoot(vector<GameObject>* ballList) {
-
-	Vector2i mousePos = Mouse::getPosition((*oWindow));
-	Vector2f mousePosF = Vector2f(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-
-	Vector2f ballStartPosition(posX, posY);
-
-	Vector2f direction = Vector2f(mousePosF.x - ballStartPosition.x, mousePosF.y - ballStartPosition.y);
-
-	ballList->push_back(GameObject(posX, posY, 10, oWindow, Color::Blue));
-
-	(*ballList)[ballList->size() - 1].CenterOrigin();
-
-
-
-	(*ballList)[ballList->size() - 1].ChangeDirection(direction);
-}
-
-
-void GameObject::LifeBrick(GameObject* gameobject)
-{
-
-}
-
-
-
-*/

@@ -21,6 +21,7 @@ public:
     RenderWindow* oWindow;
     Shape* shape;
 
+
     bool collisionEnter = false;
     bool collisionExit = false;
     int collisionPersistCounter = 0;
@@ -31,7 +32,7 @@ public:
 
     GameObject(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color);
     GameObject(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, Color color);
-    
+    GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow);
     void CenterOrigin();
     void Draw();
 

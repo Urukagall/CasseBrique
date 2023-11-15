@@ -43,7 +43,7 @@ void Canon::CanonRotate(Vector2i vPosition) {
 
 
 
-
+//Fonction pour tiré là où la souris vise 
 void Canon::Shoot(vector<Ball>* ballList) {
 
 	Vector2i mousePos = Mouse::getPosition((*oWindow));

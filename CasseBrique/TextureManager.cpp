@@ -29,7 +29,21 @@ TextureManager::TextureManager()
 	mapTexture["Brick8"].setSmooth(true);
 	mapTexture["Brick9"].loadFromFile("Image/Brick9.png");
 	mapTexture["Brick9"].setSmooth(true);
+	mapTexture["Canon"].loadFromFile("Image/Canon.png");
+	mapTexture["Canon"].setSmooth(true);
+	mapTexture["Ball"].loadFromFile("Image/Ball.png");
+	mapTexture["Ball"].setSmooth(true);
 
+}
+
+Texture* TextureManager::ChangeCanonTexture()
+{
+	return &mapTexture["Canon"];
+}
+
+void TextureManager::ChangeBallTexture(Ball* ball)
+{
+	ball->shape->setTexture(&mapTexture["Ball"]);
 }
 
 void TextureManager::ChangeBrickTexture(Brick* brick)

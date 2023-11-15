@@ -96,8 +96,9 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 	brickList = loadBricksFromTxt("level.txt", oWindow);
 
 
-	canon = new Canon(oWindow->getSize().x / 2, 800, 25, 50, oWindow, Color::Green);
-
+	canon = new Canon(oWindow->getSize().x / 2, 800, 25, 50, oWindow, &textureManager);
+	
+	canon->shape->setTexture(textureManager.ChangeCanonTexture());
 
 	while (oWindow->isOpen())
 	{

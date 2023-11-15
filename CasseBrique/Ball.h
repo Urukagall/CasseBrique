@@ -25,7 +25,7 @@ public:
 
 
 
-	Ball(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color);
+	Ball(float posX, float posY, float sizeH, RenderWindow* oWindow);
 
     void Move(float fDeltaTime);
     void ChangeDirection(Vector2f direction);

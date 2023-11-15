@@ -11,9 +11,10 @@ using namespace std;
 
 
 //Création de rectangle et carré 
-Canon::Canon(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow, Color color)
-	: GameObject(posX, posY, sizeW, sizeH, oWindow, color)
+Canon::Canon(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow, TextureManager* textureManager)
+	: GameObject(posX, posY, sizeW, sizeH, oWindow)
 {
+	this->textureManager = textureManager;
 }
 
 Canon::~Canon() {
@@ -53,13 +54,13 @@ void Canon::Shoot(vector<Ball>* ballList) {
 
 	Vector2f direction = Vector2f(mousePosF.x - ballStartPosition.x, mousePosF.y - ballStartPosition.y);
 
-	ballList->push_back(Ball(posX, posY, 10, oWindow, Color::Blue));
+	ballList->push_back(Ball(posX, posY, 10, oWindow));
 
 	(*ballList)[ballList->size() - 1].CenterOrigin();
 
-
-
 	(*ballList)[ballList->size() - 1].ChangeDirection(direction);
+
+	textureManager->ChangeBallTexture(&(*ballList)[ballList->size() - 1]);
 }
 
 

@@ -30,8 +30,8 @@ public:
 	FloatRect boundingBox;
 	FloatRect otherBox;
 
-    GameObject(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color);
-    GameObject(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, Color color);
+    GameObject(float posX, float posY, float sizeH, RenderWindow* oWindow);
+    //GameObject(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, Color color);
     GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow);
     void CenterOrigin();
     void Draw();

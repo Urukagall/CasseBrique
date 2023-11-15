@@ -10,8 +10,8 @@ using namespace sf;
 using namespace std;
 
 //Créaétion de ball 
-Ball::Ball(float posX, float posY, float sizeH, RenderWindow* oWindow, Color color)
-	: GameObject(posX, posY, sizeH, oWindow, color)
+Ball::Ball(float posX, float posY, float sizeH, RenderWindow* oWindow)
+	: GameObject(posX, posY, sizeH, oWindow)
 {
 }
 
@@ -81,7 +81,6 @@ float Ball::CollisionEnter(Brick* brick, bool canBounce)
 			return distanceV;
 		}
 		else {
-			cout << "vertical" << (*brick).posY << "   " << this->posY << endl;
 			Bounce("vertical");
 			brick->LooseLife();
 		}
@@ -93,7 +92,6 @@ float Ball::CollisionEnter(Brick* brick, bool canBounce)
 			return distanceH;
 		}
 		else {
-			cout << "horizontal" << (*brick).posX << "   " << this->posX << endl;
 			Bounce("horizontal");
 			brick->LooseLife();
 		}
@@ -134,14 +132,12 @@ void Ball::Collision(vector<Brick>* brickList)
 	{
 		if (!collisionEnter)
 		{
-			cout << "enter" << endl;
 			collisionEnter = true;
 			CollisionEnter(&(*brickList)[nearestBrick.second], true);
 		}
 	}
 	else if (collisionEnter)
 	{
-		cout << "exit" << endl;
 		CollisionExit();
 	}
 }
@@ -172,7 +168,7 @@ void Ball::Shoot(vector<Ball>* ballList) {
 
 	Vector2f direction = Vector2f(mousePosF.x - ballStartPosition.x, mousePosF.y - ballStartPosition.y);
 
-	ballList->push_back(Ball(posX, posY, 10, oWindow, Color::Blue));
+	ballList->push_back(Ball(posX, posY, 10, oWindow));
 
 	(*ballList)[ballList->size() - 1].CenterOrigin();
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include "Ball.h"
 #include "GameObject.h"
+#include "TextureManager.h"
 
 using namespace sf;
 using namespace std;
@@ -18,8 +19,10 @@ public:
     FloatRect boundingBox;
     FloatRect otherBox;
 
+    TextureManager* textureManager;
 
-	Canon(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, Color color);
+
+	Canon(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, TextureManager* textureManager);
     void CanonRotate(Vector2i vPosition);
     void ChangeDirection(Vector2f oDirection);
     void Shoot(vector<Ball>* ballList);

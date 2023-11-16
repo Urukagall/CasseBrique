@@ -53,6 +53,25 @@ void Canon::Shoot(vector<Ball>* ballList) {
 	textureManager->ChangeBallTexture(&(*ballList)[ballList->size() - 1]);
 }
 
+//Fonction pour tiré là où la souris vise 
+void Canon::ShockWaveShoot(ShockWave* shockWave) {
+
+	Vector2i mousePos = Mouse::getPosition((*oWindow));
+	Vector2f mousePosF = Vector2f(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+
+	Vector2f shockStartPosition(posX, posY);
+
+	Vector2f direction = Vector2f(mousePosF.x - shockStartPosition.x, mousePosF.y - shockStartPosition.y);
+
+
+	float mouseAngle = -atan2(mousePos.x - posX, mousePos.y - posY) * 180 / 3.14159;
+	shockWave->shape->setRotation(mouseAngle);
+
+	shockWave->posX = shockStartPosition.x;
+	shockWave->posY = shockStartPosition.y;
+	shockWave->ChangeDirection(direction);
+}
+
 
 
 

@@ -92,8 +92,11 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 
 
 	canon = new Canon(oWindow->getSize().x / 2, 800, 25, 50, oWindow, &textureManager);
-	
 	canon->shape->setTexture(textureManager.ChangeCanonTexture());
+	
+	shockWave = new ShockWave(oWindow->getSize().x / 2, 800, 100, 200, oWindow);
+	shockWave->shape->setTexture(textureManager.ChangeShockTexture());
+	shockWave->CenterOrigin();
 
 	while (oWindow->isOpen())
 	{
@@ -113,6 +116,13 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 				if (ballList.size() <= 100 and Mouse::getPosition(*oWindow).y < canon->posY)
 				{
 					canon->Shoot(&ballList);
+				}
+			}
+			if (oEvent.type == Event::MouseButtonPressed && oEvent.key.code == Mouse::Right) {
+				if (true)
+				{
+					shockWave->isActivate = true;
+					canon->ShockWaveShoot(shockWave);
 				}
 			}
 			//Changer de niveaux en +1
@@ -148,11 +158,9 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 		}
 		
 
-		//UPDATE
-
-		//DRAW
 		oWindow->clear();
 
+		//Mouvement, collisions et affichage des balles
 		for (int i = 0; i < ballList.size(); i++)
 		{
 
@@ -162,13 +170,15 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 			else {
 				for (int j = 0; j < numSimulation; j++)
 				{
-					ballList[i].Collision(&brickList);
+					ballList[i].Collision(&brickList, &ballList);
 					ballList[i].Move(fDeltaTime / numSimulation);
 				}
 				ballList[i].Draw();
 			}
 		}
 
+
+		//Mouvement, collisions et affichage des bricks
 		for (int i = 0; i < brickList.size(); i++)
 		{
 			if (brickList[i].DetectDeath())
@@ -192,12 +202,27 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 
 		//mouseSquare->Move(fDeltaTime);
 		//mouseSquare->Draw();
-		
+
+
+
+		//Mouvement et affichage du canon
 		canon->CanonRotate(Mouse::getPosition(*oWindow));
 		canon->Draw();
 
+
+		//Mouvement, affichage et mouvement du canon
+		if (shockWave->isActivate and Mouse::getPosition(*oWindow).y < canon->posY)
+		{
+			shockWave->Collision(&ballList);
+			shockWave->Move(fDeltaTime);
+			shockWave->WallDestroy();
+			shockWave->Draw();
+		}
+
 		oWindow->display();
 
+
+		//Réglage des FPS
 		fDeltaTime = oClock.restart().asSeconds();
 
 		if (fDeltaTime < frameTime)

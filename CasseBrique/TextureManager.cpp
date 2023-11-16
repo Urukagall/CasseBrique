@@ -33,12 +33,20 @@ TextureManager::TextureManager()
 	mapTexture["Canon"].setSmooth(true);
 	mapTexture["Ball"].loadFromFile("Image/Ball.png");
 	mapTexture["Ball"].setSmooth(true);
+	mapTexture["Shock"].loadFromFile("Image/Shock.png");
+	mapTexture["Shock"].setSmooth(true);
 }
 
 //Appliquer la texture au canon 
 Texture* TextureManager::ChangeCanonTexture()
 {
 	return &mapTexture["Canon"];
+}
+
+//Appliquer a l'onde de choc 
+Texture* TextureManager::ChangeShockTexture()
+{
+	return &mapTexture["Shock"];
 }
 
 //Appliquer la texture à la balle  

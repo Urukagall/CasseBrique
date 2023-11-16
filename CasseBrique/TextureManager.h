@@ -19,6 +19,7 @@ public:
 	
 	void ChangeBrickTexture(Brick* brick);
 	Texture* ChangeCanonTexture();
+	Texture* ChangeShockTexture();
 	void ChangeBallTexture(Ball* ball);
 
 	~TextureManager();

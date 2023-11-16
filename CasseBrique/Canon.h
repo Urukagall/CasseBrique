@@ -5,6 +5,7 @@
 #include "Ball.h"
 #include "GameObject.h"
 #include "TextureManager.h"
+#include "shockWave.h"
 
 using namespace sf;
 using namespace std;
@@ -25,6 +26,7 @@ public:
 	Canon(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, TextureManager* textureManager);
     void CanonRotate(Vector2i vPosition);
     void Shoot(vector<Ball>* ballList);
+    void ShockWaveShoot(ShockWave* shockWave);
 
     ~Canon();
 };

@@ -7,6 +7,7 @@
 #include "Brick.h"
 #include "Ball.h"
 #include "Canon.h"
+#include "ShockWave.h"
 #include "TextureManager.h"
 
 using namespace sf;
@@ -27,6 +28,10 @@ public:
 
 
 	Canon* canon;
+
+	ShockWave* shockWave;
+
+	bool isShockWave = false;
 
 	float frameTime = 1.0f / 60.0f;
 

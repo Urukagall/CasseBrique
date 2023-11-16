@@ -107,9 +107,11 @@ void Ball::CollisionExit()
 
 
 //Détection des collision avec les Brick 
-void Ball::Collision(vector<Brick>* brickList)
+void Ball::Collision(vector<Brick>* brickList, vector<Ball>* ballList)
 { 
-	std::pair<float, int> nearestBrick = { std::numeric_limits<float>::infinity(), -1 };
+
+	//Collision Brick
+	pair<float, int> nearestBrick = { std::numeric_limits<float>::infinity(), -1 };
 
 	for (int i = 0; i < brickList->size(); i++)
 	{
@@ -138,6 +140,39 @@ void Ball::Collision(vector<Brick>* brickList)
 	{
 		CollisionExit();
 	}
+
+	//Collision ball
+	pair<float, int> nearestBall = { std::numeric_limits<float>::infinity(), -1 };
+
+	for (int i = 0; i < ballList->size(); i++)
+	{
+		if (posX != (*ballList)[i].posX or posY != (*ballList)[i].posY)
+		{
+			bool currentCollision = shape->getGlobalBounds().intersects((*ballList)[i].shape->getGlobalBounds());
+
+			if (currentCollision and !ballCollisionEnter)
+			{
+				ballCollisionEnter = true;
+				Vector2f tangeante;
+				tangeante = direction + (*ballList)[i].direction;
+				tangeante = Math::Normalized(tangeante);
+				if (posX >= (*ballList)[i].posX)
+				{
+					direction = Vector2f(tangeante.x , -tangeante.y);
+				}
+				else
+				{
+					direction = Vector2f(-tangeante.x, tangeante.y);
+				}
+				//(*ballList)[i].direction = Vector2f(-tangeante.x, tangeante.y);
+				break;
+			}
+			else {
+				ballCollisionEnter = false;
+			}
+		}
+	}
+
 }
 
 
@@ -153,24 +188,4 @@ void Ball::Bounce(string sens) {
 	{
 		direction.x = -direction.x;
 	}
-}
-
-
-//Aplication sur la ball de la fonction shoot 
-void Ball::Shoot(vector<Ball>* ballList) {
-
-	Vector2i mousePos = Mouse::getPosition((*oWindow));
-	Vector2f mousePosF = Vector2f(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-
-	Vector2f ballStartPosition(posX, posY);
-
-	Vector2f direction = Vector2f(mousePosF.x - ballStartPosition.x, mousePosF.y - ballStartPosition.y);
-
-	ballList->push_back(Ball(posX, posY, 10, oWindow));
-
-	(*ballList)[ballList->size() - 1].CenterOrigin();
-
-
-
-	(*ballList)[ballList->size() - 1].ChangeDirection(direction);
 }

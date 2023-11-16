@@ -3,19 +3,20 @@
 #include <SFML/System.hpp>
 #include <vector>
 #include "GameObject.h"
-#include "Brick.h"
+#include "Ball.h"
 
 using namespace sf;
 using namespace std;
 
-class Ball : public GameObject
+class ShockWave : public GameObject
 {
 public:
 
     Vector2f direction;
     float speed = 500;
 
-    bool ballCollisionEnter = false;
+    bool isActivate = false;
+
     bool collisionEnter = false;
     bool collisionExit = false;
     int collisionPersistCounter = 0;
@@ -26,20 +27,17 @@ public:
 
 
 
-	Ball(float posX, float posY, float sizeH, RenderWindow* oWindow);
+    ShockWave(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow);
 
     void Move(float fDeltaTime);
     void ChangeDirection(Vector2f direction);
-    bool WallBounce();
-    float CollisionEnter(Brick* brick, bool canBounce);
-    void CollisionExit();
-    void Collision(vector<Brick>* brickList, vector<Ball>* ballList);
-    void Bounce(string sens);
-    void Shoot(vector<Ball>* ballList);
+    bool WallDestroy();
+    float CollisionEnter(Ball* ball, bool canBounce);
+    void Collision(vector<Ball>* ballList);
 
 
 
 
-    ~Ball();
+    ~ShockWave();
 };
 

@@ -9,7 +9,7 @@
 using namespace sf;
 using namespace std;
 
-//Créaétion de ball 
+//Création d'un gameobject circulaire
 GameObject::GameObject(float posX, float posY, float sizeH, RenderWindow* oWindow)
 	: posX(posX), posY(posY), sizeH(sizeH), oWindow(oWindow), color(color)
 {
@@ -17,36 +17,24 @@ GameObject::GameObject(float posX, float posY, float sizeH, RenderWindow* oWindo
 	shape->setPosition(posX, posY);
 }
 
-/*
-//Création de rectangle et carré 
-GameObject::GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow, Color color)
-	: posX(posX), posY(posY), sizeW(sizeW), sizeH(sizeH), oWindow(oWindow)
-{
-	shape = new RectangleShape(Vector2f(sizeW, sizeH));
-	shape->setPosition(posX, posY);
-	shape->setFillColor(color);
-}*/
-
-//Création d'une image
+//Création d'un gameobject rectangulaire
 GameObject::GameObject(float posX, float posY, float sizeW, float sizeH, RenderWindow* oWindow)
 	: posX(posX), posY(posY), sizeW(sizeW), sizeH(sizeH), oWindow(oWindow)
 {
-	
 	shape = new RectangleShape(Vector2f(sizeW, sizeH));
 	shape->setPosition(posX, posY);
-	//shape->setTexture(&texture);
-	
 }
 
 GameObject::~GameObject(){
 
 }
 
+//Affiche les GameObject
 void GameObject::Draw() {
 	oWindow->draw(*shape);
 }
 
-//Recentré l'origine du rectangle  
+//Recentré l'origine du gameObject  
 void GameObject::CenterOrigin() {
 	if (sizeW == 0)
 	{

@@ -44,10 +44,7 @@ void Brick::ChangeColor()
 	{
 		color = Color::Green;
 	}
-	//a changer 
-	//shape->setFillColor(color);
 }
-
 
 //Detection de la mort de la brick 
 bool Brick::DetectDeath()

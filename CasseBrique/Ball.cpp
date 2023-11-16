@@ -20,8 +20,6 @@ Ball::~Ball() {
 }
 
 
-
-
 //mouvement des ball
 void Ball::Move(float fDeltaTime)
 {
@@ -67,7 +65,7 @@ bool Ball::WallBounce() {
 	return false;
 }
 
-//Détection des Première colisions 
+//Détection des Première colisions et la direction des collisions
 float Ball::CollisionEnter(Brick* brick, bool canBounce)
 {
 
@@ -108,7 +106,7 @@ void Ball::CollisionExit()
 }
 
 
-//Détection des collision 
+//Détection des collision avec les Brick 
 void Ball::Collision(vector<Brick>* brickList)
 { 
 	std::pair<float, int> nearestBrick = { std::numeric_limits<float>::infinity(), -1 };

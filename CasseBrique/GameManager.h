@@ -34,6 +34,8 @@ public:
 
 	int numSimulation = 10;
 
+	int level = 1;
+
 
 	static void Init();
 	static GameManager* Get();

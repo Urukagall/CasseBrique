@@ -21,16 +21,6 @@ Canon::~Canon() {
 
 }
 
-
-
-void Canon::ChangeDirection(Vector2f oDirection) {
-	direction = Math::Normalized(oDirection);
-}
-
-
-
-
-
 //Rotation du Canon 
 void Canon::CanonRotate(Vector2i vPosition) {
 	if (vPosition.y < posY) //à changer pour que l'angle soit moins de 180°

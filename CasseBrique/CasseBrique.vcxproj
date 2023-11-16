@@ -153,7 +153,12 @@
     <ResourceCompile Include="CasseBrique.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Level.txt" />
+    <None Include="Leve4.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Level1.txt" />
+    <Text Include="Level2.txt" />
+    <Text Include="Level3.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

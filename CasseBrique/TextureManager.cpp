@@ -33,19 +33,21 @@ TextureManager::TextureManager()
 	mapTexture["Canon"].setSmooth(true);
 	mapTexture["Ball"].loadFromFile("Image/Ball.png");
 	mapTexture["Ball"].setSmooth(true);
-
 }
 
+//Appliquer la texture au canon 
 Texture* TextureManager::ChangeCanonTexture()
 {
 	return &mapTexture["Canon"];
 }
 
+//Appliquer la texture à la balle  
 void TextureManager::ChangeBallTexture(Ball* ball)
 {
 	ball->shape->setTexture(&mapTexture["Ball"]);
 }
 
+//Changer la couleur des bricks en fonction de leur vie 
 void TextureManager::ChangeBrickTexture(Brick* brick)
 {
 	if (brick->life == 1) {

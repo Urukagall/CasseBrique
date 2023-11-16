@@ -24,7 +24,6 @@ public:
 
 	Canon(float posX, float posY, float sizeH, float sizeW, RenderWindow* oWindow, TextureManager* textureManager);
     void CanonRotate(Vector2i vPosition);
-    void ChangeDirection(Vector2f oDirection);
     void Shoot(vector<Ball>* ballList);
 
     ~Canon();

@@ -11,33 +11,29 @@ using namespace sf;
 using namespace std;
 
 
-
-GameManager::GameManager() {
+//Constructeur vide 
+GameManager::GameManager() 
+{
 	
-	//Création d'une fenêtre
-
-	//sf::RenderWindow window(fullscreenMode, "SFML Fullscreen", sf::Style::Fullscreen);
-
-	
-
-	//GameObject mouseSquare(0, 0, 100, 100, &oWindow, Color::Yellow);
-	//mouseSquare.CenterOrigin();
-
-
 }
-
+//return de l'Instance 
 GameManager* GameManager::pInstance = nullptr;
 
+
+//Utilisation de l'instance pour Initialiser le GameManager 
 void GameManager::Init()
 {
 	GameManager::pInstance = new GameManager();
 }
 
+//Récuperation de l'instance grâçe au get 
 GameManager* GameManager::Get()
 {
 	return GameManager::pInstance;
 }
 
+
+//Méthode pour lire les fichier txt et créer les niveaux en fonction
 vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderWindow* oWindow) {
 	vector<Brick> bricks;
 
@@ -55,7 +51,7 @@ vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderW
 		if (line.size() <= 9)
 		{
 			for (size_t i = 0; i < line.size(); ++i) {
-				int life = line[i] - '0';  // Convertir le caractère en entier
+				int life = line[i] - '0';  // Convertir le caractère en entier 
 				// Créer une brique avec les données spécifiques
 				Brick brick(i * 100 + 50, row * 25 + 12.5, 100, 25, life, oWindow);
 				brick.CenterOrigin();
@@ -70,7 +66,7 @@ vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderW
 				int life = line[i] - '0';  // Convertir le caractère en entier
 
 				// Créer une brique avec les données spécifiques
-				Brick brick(i * 100, row * 25, 100, 25, life, oWindow);
+				Brick brick(i * 100 + 50, row * 25 + 12.5, 100, 25, life, oWindow);
 				brick.CenterOrigin();
 				brick.ChangeColor();
 
@@ -88,12 +84,11 @@ vector<Brick> GameManager::loadBricksFromTxt(const string& filename, sf::RenderW
 
 
 
-
 void GameManager::GameLoop(RenderWindow* oWindow) {
 	Clock oClock;
 	//GameLoop
 
-	brickList = loadBricksFromTxt("level.txt", oWindow);
+	brickList = loadBricksFromTxt("Level/Level1.txt", oWindow);
 
 
 	canon = new Canon(oWindow->getSize().x / 2, 800, 25, 50, oWindow, &textureManager);
@@ -120,17 +115,38 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 					canon->Shoot(&ballList);
 				}
 			}
-		}
-		/*
-		if (brickList.size() != 0)
-		{
+			//Changer de niveaux en +1
+			if (oEvent.type == Event::KeyPressed && oEvent.key.code == Keyboard::Left) {
+				if (level != 1)
+				{
+					level -= 1; 
+
+					stringstream ss;
+					ss << "Level/Level" << level << ".txt";
+					string filePath = ss.str();
+
+					brickList = loadBricksFromTxt(filePath, oWindow);
+					ballList.clear();
+				}
+			}
+			//Changer de niveaux en -1 
+			if (oEvent.type == Event::KeyPressed && oEvent.key.code == Keyboard::Right) 
+			{
+				if(level != 10)
+				{
+					level += 1;
+
+					stringstream ss;
+					ss << "Level/Level" << level << ".txt";
+					string filePath = ss.str();
+
+					brickList = loadBricksFromTxt(filePath, oWindow);
+					ballList.clear();
+				}
+			}
 		
 		}
-		else
-		{
-			break;
-		}*/
-
+		
 
 		//UPDATE
 
@@ -147,7 +163,7 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 				for (int j = 0; j < numSimulation; j++)
 				{
 					ballList[i].Collision(&brickList);
-					ballList[i].Move(fDeltaTime / 10);
+					ballList[i].Move(fDeltaTime / numSimulation);
 				}
 				ballList[i].Draw();
 			}
@@ -155,12 +171,16 @@ void GameManager::GameLoop(RenderWindow* oWindow) {
 
 		for (int i = 0; i < brickList.size(); i++)
 		{
-			textureManager.ChangeBrickTexture(&brickList[i]);
-			brickList[i].Draw();
 			if (brickList[i].DetectDeath())
 			{
 				brickList.erase(brickList.begin() + i);
 			}
+		}
+
+		for (int i = 0; i < brickList.size(); i++)
+		{
+			textureManager.ChangeBrickTexture(&brickList[i]);
+			brickList[i].Draw();
 		}
 		
 		//mouseSquare->CenterOrigin();

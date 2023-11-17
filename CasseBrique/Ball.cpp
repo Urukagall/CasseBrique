@@ -170,7 +170,7 @@ void Ball::Collision(vector<Brick>* brickList, vector<Ball>* ballList)
 				}
 				break;
 			}
-			else if (ballCollisionEnter)
+			else if (ballCollisionEnter and !currentCollision)
 			{
 
 			} {

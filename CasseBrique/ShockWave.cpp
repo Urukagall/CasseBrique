@@ -78,7 +78,7 @@ void ShockWave::Collision(vector<Ball>* ballList)
 		if (currentCollision)
 		{
 			(*ballList)[i].ChangeDirection(direction);
-			isActivate = false;
+			isActivate = true;
 			break;
 		}
 	}

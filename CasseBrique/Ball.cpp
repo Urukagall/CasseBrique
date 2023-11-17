@@ -156,6 +156,10 @@ void Ball::Collision(vector<Brick>* brickList, vector<Ball>* ballList)
 				Vector2f tangeante;
 				tangeante = direction + (*ballList)[i].direction;
 				tangeante = Math::Normalized(tangeante);
+				if (direction.x == -(*ballList)[i].direction.x and direction.y == -(*ballList)[i].direction.y)
+				{
+					tangeante = Vector2f(direction.x, -direction.y);
+				}
 				if (posX >= (*ballList)[i].posX)
 				{
 					direction = Vector2f(tangeante.x , -tangeante.y);
@@ -164,10 +168,12 @@ void Ball::Collision(vector<Brick>* brickList, vector<Ball>* ballList)
 				{
 					direction = Vector2f(-tangeante.x, tangeante.y);
 				}
-				//(*ballList)[i].direction = Vector2f(-tangeante.x, tangeante.y);
 				break;
 			}
-			else {
+			else if (ballCollisionEnter)
+			{
+
+			} {
 				ballCollisionEnter = false;
 			}
 		}

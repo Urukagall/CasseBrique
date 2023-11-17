@@ -13,7 +13,7 @@ class ShockWave : public GameObject
 public:
 
     Vector2f direction;
-    float speed = 500;
+    float speed = 1500;
 
     bool isActivate = false;
 
